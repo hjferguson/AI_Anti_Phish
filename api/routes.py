@@ -1,4 +1,8 @@
 from flask import Blueprint, request, jsonify
+from AI_Anti_Phish.model.model import predict_email, predict_url
+
+import socket
+import ssl
 
 api_bp = Blueprint("api", __name__)
 
@@ -63,3 +67,56 @@ def parse_url(url_data):
     # split the url at .com
     domain, path = data.split(".com")
     scheme, domain = domain.split("//")
+    return (scheme, domain, path)
+
+
+@api_bp.route("/check_email", methods=["POST"])
+def check_email():
+    """
+    Checks if an email is a phishing email
+    """
+    try:
+        data = request["email"]
+        data = parse_email(data)
+        print(data)
+
+        # pass the data to the model
+        res = predict_email(data)
+
+        # { "probabilities": probs, "prediction": pred }
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": "Email checked successfully",
+                    "result": res,
+                }
+            ),
+            200,
+        )
+
+    except Exception as e:
+        print(e)
+        return jsonify({"status": "error", "message": "Error checking email"}), 500
+
+
+def check_dns(domain):
+    """
+    Checks if the domain is a valid domain
+    """
+    # returns tuple (hostname, aliaslist, ipaddrlist)
+    DNS_record = socket.gethostbyname_ex(domain)
+    print(DNS_record)
+
+    # if the domain is valid, the DNS record will have an IP address
+    if not DNS_record[2]:
+        return 0
+
+    for ip in DNS_record[2]:
+        if ip.startswith("127."):
+            return 1
+        cert = ssl.get_server_certificate((ip, 443))
+
+        # if the certificate is valid, the domain is valid
+        if cert:
+            return 1

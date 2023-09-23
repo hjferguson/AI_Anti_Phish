@@ -14,7 +14,7 @@ CLASSIFIER = None
 
 
 def train_model():
-    """Tains the model, should be run at the beginning of the execution to have the classifier loaded.
+    """Tains the model, must be run at the beginning of the execution to have the classifier loaded.
 
     Returns:
         dict: A dictionary with the classifier reports.
