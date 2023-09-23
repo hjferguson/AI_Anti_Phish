@@ -1,32 +1,42 @@
-function shouldTriggerExtension() {
-  const gmailPattern = /mail\.google\.com\/.*\/mail/;
-  const outlookPattern = /outlook\.live\.com/;
-  const yahooPattern = /mail\.yahoo\.com/;
+console.log("content.js file is running");
 
-  //.test() returns boolean if pattern matches or not
-  const isGmail = gmailPattern.test(window.location.href); //window.locations.href grabs current url
-  // const isOutlook = outlookPattern.test(window.location.href);
-  // const isYahoo = yahooPattern.test(window.location.href);
+// console.log(document.body);
+// document.addEventListener("DOMContentLoaded", () => {
+//   console.log(document.body.querySelectorAll("tr"))
+// })
+console.log(document.body.querySelectorAll("tr"))
+// document.body.querySelectorAll("tr")
 
-  if (isGmail){
-      const isInInbox = window.location.href.includes("/#inbox");
-      const isViewingEmail = !isInInbox || window.location.href.match(/\/#inbox\/.+/);
-      if(isViewingEmail){
-          extractEmailInfo();
-      } //returns true/false
+document.addEventListener('DOMContentLoaded', function() {
+  console.log(document.body);
+  document.body.addEventListener('click', function() {
+    console.log("clicking!")
+    const currentUrl = window.location.href;
+    // Run your code here to check the URL or do other tasks
+    shouldTriggerExtension(currentUrl);
+  });
+});
+
+
+function shouldTriggerExtension(currentUrl) {
+  const gmailPattern = /mail\.google\.com\/mail\/u\/\d+/;
+  const isGmail = gmailPattern.test(currentUrl);
+  console.log("we are in gmail?", isGmail);
+
+  if (isGmail) {
+    const isInInbox = currentUrl.includes("/#inbox");
+    console.log("we are in inbox?", isInInbox);
+
+    const isViewingEmail = isInInbox && !!currentUrl.match(/\/#inbox\/.+/);
+    console.log("we are viewing an individual email?", isViewingEmail);
+
+    if (isViewingEmail) {
+      console.log("execute extraction here");
+      // Call extractEmailInfo() function here
+    }
   }
-
-  
-
-  if (isEmailProviderSite && isViewingEmail){
-      extractEmailInfo(); 
-  }
-
-  return isEmailProviderSite && isViewingEmail;
 }
 
-
-//function that checks if gmail email is open
 
 
 
@@ -34,6 +44,8 @@ function shouldTriggerExtension() {
 function extractEmailInfo() {
   
   const sender = document.querySelector("<selector for sender>").textContent;
+  //write checks for whitelist/blacklist. If whitelist, stop program, if blacklist, warn user
+
   const body = document.querySelector("<selector for body>").textContent;
 
   // Extract links from the body
@@ -53,9 +65,3 @@ function extractEmailInfo() {
   chrome.runtime.sendMessage({ action: "extractEmailInfo", emailInfo });
   
 }
-
-// Automatically extract information when the content script is loaded
-
-
-
-

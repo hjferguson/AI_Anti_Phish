@@ -1,5 +1,4 @@
 // background.js
-
 async function sendEmailToAI(emailData) {
     try {
       const response = await fetch("http://your-ai-server-url", {

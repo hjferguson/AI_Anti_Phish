@@ -1,2 +1,2 @@
-encrypt the data to the server. also write decrypting tool --or better yet use library
 add listener for the server
+pull email sender and check with whitelist before pulling all info. also blacklist

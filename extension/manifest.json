@@ -7,8 +7,7 @@
     "activeTab",
     "storage",
     "scripting",
-    "webNavigation",
-    "https://mail.google.com/*"
+    "webNavigation"
   ],
   "action": {
     "default_popup": "popup.html"
@@ -27,6 +26,7 @@
   "background": {
     "service_worker": "background.js"
   },
+  
   "externally_connectable": {
     "matches": [
       "*://cdn.rawgit.com/*"
