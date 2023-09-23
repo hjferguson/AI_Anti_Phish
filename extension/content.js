@@ -4,16 +4,26 @@ console.log("content.js file is running");
 // document.addEventListener("DOMContentLoaded", () => {
 //   console.log(document.body.querySelectorAll("tr"))
 // })
-console.log(document.body.querySelectorAll("tr"))
+// console.log(document.body.querySelectorAll("tr"))
 // document.body.querySelectorAll("tr")
+console.log("Before DOM", window);
+window.addEventListener("hashchange", () => {
+  console.log("change");
+});
 
 document.addEventListener('DOMContentLoaded', function() {
-  console.log(document.body);
-  document.body.addEventListener('click', function() {
-    console.log("clicking!")
-    const currentUrl = window.location.href;
-    // Run your code here to check the URL or do other tasks
-    shouldTriggerExtension(currentUrl);
+  // console.log(document.body);
+  // document.body.addEventListener('click', function() {
+  //   console.log("clicking!")
+  //   const currentUrl = window.location.href;
+  //   // Run your code here to check the URL or do other tasks
+  //   shouldTriggerExtension(currentUrl);
+  // });
+  // console.log(document.body.querySelectorAll("tr"));
+  console.log("DOM Loaded", window);
+  document.addEventListener("click", () => {
+    // console.log("clicked the dom");
+    shouldTriggerExtension(document.URL);
   });
 });
 
