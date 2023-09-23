@@ -14,6 +14,11 @@ CLASSIFIER = None
 
 
 def train_model():
+    """Tains the model, should be run at the beginning of the execution to have the classifier loaded.
+
+    Returns:
+        dict: A dictionary with the classifier reports.
+    """
     df = pd.read_csv("./data/phising-set.csv")
     df.isna().sum()
     df = df.dropna()
@@ -51,6 +56,16 @@ def train_model():
 
 
 def predict_email(_sender, _subject, _body):
+    """Uses the Classifier model to predict if the email is a phishing email or not.
+
+    Args:
+        _sender (str): The email sender
+        _subject (str): The email subject
+        _body (str): The email body
+
+    Returns:
+        Response: A jsonify response for flask with a probabilities array and the prediction.
+    """
     pack = f"{_sender}\n{_subject}\n{_body}"
     if not CLASSIFIER:
         return jsonify({"error": "Classifier is not loaded."})
