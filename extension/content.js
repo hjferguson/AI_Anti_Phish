@@ -114,7 +114,14 @@ function shouldTriggerExtension(currentUrl) {
     //console.log("we enter the call to extractEmailInfo...");
 
     const wholeEmail = extractEmailInfo(); //returns list of strings
-    if (!wholeEmail) return;
+    if (!wholeEmail) {
+      const subjectDiv = document.querySelector('.ha h2');
+      const icon = document.createElement("span");
+      if (subjectDiv) subjectDiv.appendChild(icon);
+      icon.style = "margin: 0 0.5em;font-size: 0.7em;background: #cbf9c7;color: #43db4d; padding: .1em .4em;border-radius: 10px;font-weight: 600;";
+      icon.innerHTML = "Whitelisted";
+      return;
+    }
 
     const jsonwholeEmail = JSON.stringify(wholeEmail);
 
@@ -123,20 +130,22 @@ function shouldTriggerExtension(currentUrl) {
     const subjectDiv = document.querySelector('.ha h2');
     const icon = document.createElement("span");
     if (subjectDiv) subjectDiv.appendChild(icon);
-    icon.style = "margin: 0px 0.5em;font-size: 0.7em;background: #969696;color: #000000; padding: .1em .4em;border-radius: 10px;font-weight: 600;";
+    icon.style = "margin: 0 0.5em;font-size: 0.7em;background: #969696;color: #000000; padding: .1em .4em;border-radius: 10px;font-weight: 600;";
     icon.innerHTML = "Loading...";
 
+    console.log(jsonwholeEmail);
     check_data(jsonwholeEmail).then((x) => {
+      console.log(x);
 
       if (!x) {
         icon.innerHTML = "Error";
-        icon.style = "margin: 0px 0.5em;font-size: 0.7em; padding: .1em .4em;border-radius: 10px;font-weight: 600; background: #F9C7C7;color: #DB4349;";
+        icon.style = "margin: 0 0.5em;font-size: 0.7em; padding: .1em .4em;border-radius: 10px;font-weight: 600; background: #F9C7C7;color: #DB4349;";
         return;
       }
 
-      icon.innerHTML = x.prediction;
-      icon.style = "margin: 0px 0.5em;font-size: 0.7em; padding: .1em .4em;border-radius: 10px;font-weight: 600;";
-      if (x.prediction === "Phishing Email") icon.style += "background: #F9C7C7;color: #DB4349;";
+      icon.innerHTML = ` ${x.result.prediction}`;
+      icon.style = "margin: 0 0.5em;font-size: 0.7em; padding: .1em .4em;border-radius: 10px;font-weight: 600;";
+      if (x.result.prediction === "Phishing Email") icon.style += "background: #F9C7C7;color: #DB4349;";
       else icon.style += "background: #cbf9c7;color: #43db4d;";
       icon.id = "badge";
     });
@@ -185,9 +194,6 @@ function extractEmailInfo() {
     body: emailBody,
   };
 
-  // // Send the extracted data to the background script
-  // chrome.runtime.sendMessage({ action: "extractEmailInfo", emailInfo });
-
 }
 
 //tested, this works
@@ -202,14 +208,6 @@ function isTrustedEmail(emailSender) {
 }
 
 async function check_data(_content) {
-  const check_email_url = "https://127.0.0.1:5000/api/check";
-  // const data = {
-  //   emails: _emails,
-  //   subjects: _subjects,
-  //   body: _body,
-  //   links: _links,
-  // };
-
   const options = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -217,7 +215,7 @@ async function check_data(_content) {
   };
 
   try {
-    const response = await fetch(check_email_url, options);
+    const response = await fetch("http://localhost:5000/api/check_email", options);
     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
     const responseData = await response.json();

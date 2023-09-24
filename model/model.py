@@ -76,13 +76,23 @@ def predict_email(_sender, _subject, _body):
     Returns:
         Response: A jsonify response for flask with a probabilities array and the prediction.
     """
+    global CLASSIFIER
     pack = f"{_sender}\n{_subject}\n{_body}"
     if not CLASSIFIER:
         return None
 
     probs = CLASSIFIER.predict_proba([pack])
     pred = CLASSIFIER.predict([pack])
-    return jsonify({"probabilities": probs, "prediction": pred})
+    # print(probs, pred)
+    # print(type(probs))
+    # print(pred[0][0], pred[0][1])
+    # print(type(pred))
+    pred = pred.tolist()
+    probs = probs.tolist()
+    return {"prediction": pred[0], "probabilities": {
+        "safe": probs[0][0],
+        "phishing": probs[0][1]
+    }}
 
 
 if __name__ == "__main__":

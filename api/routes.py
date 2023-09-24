@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from AI_Anti_Phish.model.model import predict_email
+from model.model import predict_email
 
 import socket
 import ssl
@@ -34,7 +34,7 @@ def parse_email(email_data):
     """
     Parses an email and returns the relevant information
     """
-    data = email_data.decode("utf-8")
+    data = email_data #.decode("utf-8")
     # split the email at @ sign
     user, domain = data.split("@")
     print(user, domain)
@@ -76,12 +76,19 @@ def check_email():
     Checks if an email is a phishing email
     """
     try:
-        data = request["email"]
-        data = parse_email(data)
-        print(data)
+        data = request.get_json()
+        # data = parse_email(data["emails"])
+        # print(data)
 
         # pass the data to the model
-        res = predict_email(data)
+        # print(data["emails"])
+        # print(type(data["emails"]))
+        # print(data["subjects"])
+        # print(type(data["subjects"]))
+        # print(data["body"])
+        # print(type(data["body"]))
+        res = predict_email(data["emails"], data["subjects"], data["body"])
+        print(res)
 
         # { "probabilities": probs, "prediction": pred }
         return (

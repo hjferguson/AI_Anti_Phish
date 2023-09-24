@@ -1,6 +1,21 @@
-from AI_Anti_Phish import create_app
+# import create_app from 
 
 # The app.py file is the entry point for the application. It creates the Flask app and registers the API blueprint.
+
+from flask import Flask
+from flask_cors import CORS
+from model.model import train_model
+
+def create_app():
+    train_model()
+    app = Flask(__name__)
+    CORS(app)
+    from api.routes import api_bp
+
+    # register blueprints here
+    app.register_blueprint(api_bp, url_prefix="/api")
+
+    return app
 
 
 if __name__ == "__main__":
