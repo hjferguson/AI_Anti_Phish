@@ -5,9 +5,9 @@ const TRUSTED_DOMAINS = [
   "facebook.com",
   "twitter.com",
   "linkedin.com",
-  "gmail.com",
-  "yahoo.com",
-  "outlook.com",
+  // "gmail.com",
+  // "yahoo.com",
+  // "outlook.com",
   "amazon.com",
   "microsoft.com",
   "apple.com",
@@ -110,7 +110,8 @@ function shouldTriggerExtension(currentUrl) {
   //console.log("we are in inbox?", isInInbox);
 
   //const isViewingEmail = isInInbox && !!currentUrl.match(/\/#inbox\/.+/);
-  if (isInInbox === false) {
+  console.log("Inbox? ", isInInbox);
+  if (!isInInbox) {
     //console.log("we enter the call to extractEmailInfo...");
 
     const wholeEmail = extractEmailInfo(); //returns list of strings
@@ -118,8 +119,8 @@ function shouldTriggerExtension(currentUrl) {
       const subjectDiv = document.querySelector('.ha h2');
       const icon = document.createElement("span");
       if (subjectDiv) subjectDiv.appendChild(icon);
-      icon.style = "margin: 0 0.5em;font-size: 0.7em;background: #cbf9c7;color: #43db4d; padding: .1em .4em;border-radius: 10px;font-weight: 600;";
-      icon.innerHTML = "Whitelisted";
+      icon.style = "margin: 0 0.5em;font-size: 0.7em;background: #80ff75; height: 15px; width: 15px; border-radius: 50%; border: 2px solid #43db4d; display: inline-block;";
+      // icon.innerHTML = "&nbsp;&nbsp;&nbsp;"; 
       return;
     }
 
@@ -130,8 +131,10 @@ function shouldTriggerExtension(currentUrl) {
     const subjectDiv = document.querySelector('.ha h2');
     const icon = document.createElement("span");
     if (subjectDiv) subjectDiv.appendChild(icon);
-    icon.style = "margin: 0 0.5em;font-size: 0.7em;background: #969696;color: #000000; padding: .1em .4em;border-radius: 10px;font-weight: 600;";
-    icon.innerHTML = "Loading...";
+    // icon.style = "margin: 0 0.5em;font-size: 0.7em;background: #969696;color: #000000; padding: .1em .4em;border-radius: 100%;font-weight: 600;";
+    icon.style = "margin: 0 0.5em;background: #969696; height: 15px; width: 15px; border-radius: 50%; border: 2px solid #000; display: inline-block;";
+    // icon.innerHTML = "Loading...";
+    icon.innerHTML = "&nbsp;";
 
     console.log(jsonwholeEmail);
     check_data(jsonwholeEmail).then((x) => {
@@ -143,10 +146,14 @@ function shouldTriggerExtension(currentUrl) {
         return;
       }
 
-      icon.innerHTML = ` ${x.result.prediction}`;
-      icon.style = "margin: 0 0.5em;font-size: 0.7em; padding: .1em .4em;border-radius: 10px;font-weight: 600;";
-      if (x.result.prediction === "Phishing Email") icon.style += "background: #F9C7C7;color: #DB4349;";
-      else icon.style += "background: #cbf9c7;color: #43db4d;";
+      icon.innerHTML = "&nbsp;"; // ` ${x.result.prediction}`;
+      // icon.style = "margin: 0 0.5em;font-size: 0.7em; padding: .1em .4em;border-radius: 10px;font-weight: 600;";
+      if (x.result.prediction === "Phishing Email") {
+        if (x.result.probabilities.phishing >= 0.8) icon.innerHTML = "Phishing Email";
+        else icon.innerHTML = "Phishing Email";
+        icon.style = "margin: 0 0.5em;font-size: 0.7em; padding: .1em .4em;border-radius: 10px;font-weight: 600; background: red; color: white;";
+      }
+      else icon.style = "margin: 0 0.5em;font-size: 0.7em;background: #80ff75; height: 15px; width: 15px; border-radius: 50%; border: 2px solid #43db4d; display: inline-block;";
       icon.id = "badge";
     });
 
