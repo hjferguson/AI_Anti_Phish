@@ -1,6 +1,6 @@
 from joblib import load, dump
 import pandas as pd
-from flask import jsonify
+from flask import jsonify, Blueprint
 
 from sklearn.svm import SVC
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
