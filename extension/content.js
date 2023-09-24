@@ -13,6 +13,7 @@ const TRUSTED_DOMAINS = [
   "apple.com",
   "instagram.com",
   "netflix.com",
+  "firefox.com",
   "paypal.com",
   "dropbox.com",
   "ebay.com",
@@ -98,80 +99,78 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 function shouldTriggerExtension(currentUrl) {
-    console.log("triggered check for individual email")
-    console.log("target slice: ", currentUrl.slice(-5));
+    //console.log("triggered check for individual email")
+    //console.log("target slice: ", currentUrl.slice(-5));
     //document.URL
     if(currentUrl.slice(-5) === "inbox") {
        var isInInbox = true
       } else { 
         var isInInbox = false
       } 
-    console.log("we are in inbox?", isInInbox);
+    //console.log("we are in inbox?", isInInbox);
 
     //const isViewingEmail = isInInbox && !!currentUrl.match(/\/#inbox\/.+/);
     if(isInInbox === false){
+      //console.log("we enter the call to extractEmailInfo...");
       
-      console.log('isInInbox:', isInInbox);
-      console.log('currentUrl:', currentUrl);
-      console.log("EXECUTE extraction now.")
-      //sender
-      const spanElement = document.querySelector('.go');
-      const emailSender = spanElement ? spanElement.textContent : null;
-      console.log("Email sender: ",emailSender);
-      //subject
+      var wholeEmail = extractEmailInfo(); //returns list of strings
+      const jsonwholeEmail = JSON.stringify(wholeEmail);
 
+      // Using Fetch API
+      fetch('https://your-api-endpoint.com/data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: jsonwholeEmail
+      })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch((error) => console.error('Error:', error));
 
-
-      const subjectDiv = document.querySelector('.ha h2');
-      const subject = subjectDiv ? subjectDiv.textContent : null;
-      console.log("Subject :", subject);
-      //body
-      const emailBodyContainer = document.querySelector('.gs');
-      const emailBody = emailBodyContainer ? emailBodyContainer.innerText : null;
-      console.log("Email body: ", emailBody)
-      //replyto?
-      // const replySpan = document.querySelector('.ajB.gt .ajC tbody .ajv .gL .gI span');
-      // const replyToEmail = replySpan ? replySpan.innerText : null;
-      // console.log("replyto: ", replyToEmail);
-
-    }
-    
-
-
-    // if (isViewingEmail) {
-    //   console.log("execute extraction here");
-    //   // Call extractEmailInfo() function here
-
-    // }
-}
-
-
-
+          }
+          
+      }
 
 
 // Function to extract email information and communicate with the background script
 function extractEmailInfo() {
   
-  const sender = document.querySelector("<selector for sender>").textContent;
-  //write checks for whitelist/blacklist. If whitelist, stop program, if blacklist, warn user
+  let wholeEmail = [];
+  //first important detail is sender. need to grab and compare to whitelist
+  const spanElement = document.querySelector('.go');
+  const emailSender = spanElement ? spanElement.textContent : null;
+  const cleanedEmailSender = emailSender.replace(/<|>/g, ''); //gmail displays sender in <>
+  
+  console.log("cleanedEmailSender within extract: ", cleanedEmailSender);
+  console.log("bool of cleaned: ", isTrustedEmail(cleanedEmailSender));
+  
+  if(isTrustedEmail(cleanedEmailSender) === false){
+    //subject
+    const subjectDiv = document.querySelector('.ha h2');
+    const subject = subjectDiv ? subjectDiv.textContent : null;
+    console.log("Subject :", subject);
 
-  const body = document.querySelector("<selector for body>").textContent;
+    //body
+    const emailBodyContainer = document.querySelector('.gs');
+    const emailBody = emailBodyContainer ? emailBodyContainer.innerText : null;
+    console.log("Email body: ", emailBody)
 
-  // Extract links from the body
-  const links = [];
-  const linkElements = document.querySelectorAll("<selector for links>");
-  linkElements.forEach((linkElement) => {
-    links.push(linkElement.href);
-  });
+    //replyto    ----this doesnt work... :/
+    // const replySpan = document.querySelector('.ajB.gt .ajC tbody .ajv .gL .gI span');
+    // const replyToEmail = replySpan ? replySpan.innerText : null;
+    // console.log("replyto: ", replyToEmail);
+    
+    return wholeEmail = [cleanedEmailSender, subject, emailBody];
 
-  const emailInfo = {
-    sender,
-    body,
-    links,
-  };
+  }else{
+    console.log("This domain is trusted! Powering down scans");
+  }
 
-  // Send the extracted data to the background script
-  chrome.runtime.sendMessage({ action: "extractEmailInfo", emailInfo });
+  
+
+  // // Send the extracted data to the background script
+  // chrome.runtime.sendMessage({ action: "extractEmailInfo", emailInfo });
   
 }
 
@@ -185,7 +184,4 @@ function isTrustedEmail(emailSender) {
   }
   return false;
 }
-
-
-
 
