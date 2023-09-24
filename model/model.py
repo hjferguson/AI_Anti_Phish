@@ -1,3 +1,4 @@
+from joblib import load, dump
 import pandas as pd
 from flask import jsonify
 
@@ -11,6 +12,7 @@ from sklearn.pipeline import Pipeline
 import os
 
 CLASSIFIER = None
+PICKLE_CLASSIFIER = "./sklassifier.pkl"
 
 
 def train_model():
@@ -19,7 +21,12 @@ def train_model():
     Returns:
         dict: A dictionary with the classifier reports.
     """
-    df = pd.read_csv("./data/phising-set.csv")
+    global CLASSIFIER
+    if os.path.exists(PICKLE_CLASSIFIER):
+        CLASSIFIER = load(PICKLE_CLASSIFIER)
+        return
+
+    df = pd.read_csv("./model/data/phising-set.csv")
     df.isna().sum()
     df = df.dropna()
 
@@ -34,7 +41,6 @@ def train_model():
 
     X = Data["Email Text"].values
     y = Data["Email Type"].values
-    # print(X, y, sep="\n\n")
     X_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.3, random_state=0
     )
@@ -47,7 +53,11 @@ def train_model():
     )
 
     CLASSIFIER.fit(X_train, y_train)
+    with open(PICKLE_CLASSIFIER, "wb") as pickle_file:
+        dump(CLASSIFIER, pickle_file)
+
     y_pred = CLASSIFIER.predict(x_test)
+
     return {
         "accuracy": accuracy_score(y_test, y_pred),
         "confusion": confusion_matrix(y_test, y_pred),
@@ -68,32 +78,28 @@ def predict_email(_sender, _subject, _body):
     """
     pack = f"{_sender}\n{_subject}\n{_body}"
     if not CLASSIFIER:
-        return jsonify({"error": "Classifier is not loaded."})
+        return None
 
-    probs = CLASSIFIER.predict_proba(pack)
-    pred = CLASSIFIER.predict(pack)
+    probs = CLASSIFIER.predict_proba([pack])
+    pred = CLASSIFIER.predict([pack])
     return jsonify({"probabilities": probs, "prediction": pred})
 
 
-# data = []
-# data.append(rawd)
-# # for _ in range(10):
-# #     data.append(rawd)
+if __name__ == "__main__":
+    train_model()
+    res = predict_email(
+        "Tiny Content",
+        "noreply@naisit.com",
+        """Daer Bruno Ramirez Bonilla,
 
-# print(type(np.array(data)))
-# probs = classifier.predict_proba(data)
-# pred = classifier.predict(data)
+Welcome to the world of programming logic, algorithms, and problem-solving.
+
+Your professor has submitted your email address so you can receive a copy of "The Basics of a Complicated Concepts (Programming Logic)" e-book, published and copyrighted by Naisit (Tiny Content) publishing. This e-book will be updated regularly. You will be notified when a new version is available for you to download. Your copy is watermarked with your name and email address to prevent any illegal distributions.
+
+Please follow the URL to download your e-book.
 
 
-# print(pred, probs)
+URL: https://tinycontent.naisit.com/api/download/6327e789937000676d09c666""",
+    )
 
-# # print(accuracy_score(y_test, y_pred))
-# # print(confusion_matrix(y_test, y_pred))
-# # print(classification_report(y_test, pred))
-
-# # Create the Pipeline
-# # SVM = Pipeline([("tfidf", TfidfVectorizer()), ("SVM", SVC(C=100, gamma="auto"))])
-
-# # SVM.fit(X_train, y_train)
-# # s_ypred = SVM.predict(x_test)
-# # print(accuracy_score(y_test, s_ypred))
+    print(res)
