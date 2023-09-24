@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from AI_Anti_Phish.model.model import predict_email, predict_url
+from AI_Anti_Phish.model.model import predict_email
 
 import socket
 import ssl
