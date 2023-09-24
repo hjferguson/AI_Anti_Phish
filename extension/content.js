@@ -1,51 +1,57 @@
 console.log("content.js file is running");
 
-// console.log(document.body);
-// document.addEventListener("DOMContentLoaded", () => {
-//   console.log(document.body.querySelectorAll("tr"))
-// })
-// console.log(document.body.querySelectorAll("tr"))
-// document.body.querySelectorAll("tr")
 console.log("Before DOM", window);
 window.addEventListener("hashchange", () => {
-  console.log("change");
+  console.log("hashchange recorded");
+  shouldTriggerExtension(document.URL); //this is printing correct url now
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-  // console.log(document.body);
-  // document.body.addEventListener('click', function() {
-  //   console.log("clicking!")
-  //   const currentUrl = window.location.href;
-  //   // Run your code here to check the URL or do other tasks
-  //   shouldTriggerExtension(currentUrl);
-  // });
-  // console.log(document.body.querySelectorAll("tr"));
   console.log("DOM Loaded", window);
   document.addEventListener("click", () => {
     // console.log("clicked the dom");
-    shouldTriggerExtension(document.URL);
+    //shouldTriggerExtension(document.URL); //this is capturing inbox url then switching to email
   });
 });
 
 
 function shouldTriggerExtension(currentUrl) {
-  const gmailPattern = /mail\.google\.com\/mail\/u\/\d+/;
-  const isGmail = gmailPattern.test(currentUrl);
-  console.log("we are in gmail?", isGmail);
-
-  if (isGmail) {
-    const isInInbox = currentUrl.includes("/#inbox");
+    console.log("triggered check for individual email")
+    console.log("target slice: ", currentUrl.slice(-5));
+    //document.URL
+    if(currentUrl.slice(-5) === "inbox") {
+       var isInInbox = true
+      } else { 
+        var isInInbox = false
+      } 
     console.log("we are in inbox?", isInInbox);
 
-    const isViewingEmail = isInInbox && !!currentUrl.match(/\/#inbox\/.+/);
-    console.log("we are viewing an individual email?", isViewingEmail);
+    //const isViewingEmail = isInInbox && !!currentUrl.match(/\/#inbox\/.+/);
+    if(isInInbox === false){
+      
+      console.log('isInInbox:', isInInbox);
+      console.log('currentUrl:', currentUrl);
+      console.log("EXECUTE extraction now.")
+      const spanElement = document.querySelector('.go');
+      const emailSender = spanElement ? spanElement.textContent : null;
+      console.log("Email sender: ",emailSender);
+      const subjectDiv = document.querySelector('.ha h2');
+      const subject = subjectDiv ? subjectDiv.textContent : null;
+      console.log("Subject :", subject);
 
-    if (isViewingEmail) {
-      console.log("execute extraction here");
-      // Call extractEmailInfo() function here
+
+
     }
-  }
+    
+
+
+    // if (isViewingEmail) {
+    //   console.log("execute extraction here");
+    //   // Call extractEmailInfo() function here
+
+    // }
 }
+
 
 
 
