@@ -81,3 +81,37 @@ function extractEmailInfo() {
   chrome.runtime.sendMessage({ action: "extractEmailInfo", emailInfo });
   
 }
+function check_data(){
+  const check_email_url = "https://127.0.0.1:5000/api/check";
+  const data = {
+    emails: [],
+    body: body,
+    links: [],
+    };
+
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  const options = {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(data),
+  };
+
+  // make post request to check_email
+  fetch(check_email_url, options)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((responseData) => {
+      console.log("Response from AI model:", responseData);
+    }
+    )
+    .catch((error) => {
+      console.error("Error sending email to AI:", error);
+    });
+}
