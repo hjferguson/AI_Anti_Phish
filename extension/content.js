@@ -149,9 +149,16 @@ function shouldTriggerExtension(currentUrl) {
       icon.innerHTML = "&nbsp;"; // ` ${x.result.prediction}`;
       // icon.style = "margin: 0 0.5em;font-size: 0.7em; padding: .1em .4em;border-radius: 10px;font-weight: 600;";
       if (x.result.prediction === "Phishing Email") {
-        if (x.result.probabilities.phishing >= 0.8) icon.innerHTML = "Phishing Email";
-        else icon.innerHTML = "Phishing Email";
+        icon.innerHTML = "Phishing Email";
         icon.style = "margin: 0 0.5em;font-size: 0.7em; padding: .1em .4em;border-radius: 10px;font-weight: 600; background: red; color: white;";
+        document.querySelectorAll('.gs').forEach((el) => {
+          el.querySelectorAll("a").forEach((a) => {
+            const link = a.href;
+            a.innerText += `\n${link}`
+            a.href = "";
+            a.style += "; pointer-events: none;";
+          })
+        });
       }
       else icon.style = "margin: 0 0.5em;font-size: 0.7em;background: #80ff75; height: 15px; width: 15px; border-radius: 50%; border: 2px solid #43db4d; display: inline-block;";
       icon.id = "badge";
@@ -188,6 +195,8 @@ function extractEmailInfo() {
   //body
   const emailBodyContainer = document.querySelector('.gs');
   const emailBody = emailBodyContainer ? emailBodyContainer.innerText : null;
+  // const emailBody = emailBodyContainer ?? emailBodyContainer.innerText;
+  // const emailBody = (emailBodyContainer ?? new HTMLDivElement()).innerText; // ?? emailBodyContainer.innerText;
   console.log("Email body: ", emailBody)
 
   //replyto    ----this doesnt work... :/
