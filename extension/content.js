@@ -32,12 +32,24 @@ function shouldTriggerExtension(currentUrl) {
       console.log('isInInbox:', isInInbox);
       console.log('currentUrl:', currentUrl);
       console.log("EXECUTE extraction now.")
+      //sender
       const spanElement = document.querySelector('.go');
       const emailSender = spanElement ? spanElement.textContent : null;
       console.log("Email sender: ",emailSender);
+      //subject
       const subjectDiv = document.querySelector('.ha h2');
       const subject = subjectDiv ? subjectDiv.textContent : null;
       console.log("Subject :", subject);
+      //body
+      const emailBodyContainer = document.querySelector('.gs');
+      const emailBody = emailBodyContainer ? emailBodyContainer.innerText : null;
+      console.log("Email body: ", emailBody)
+      //replyto?
+      const replySpan = document.querySelector('.ajB.gt .ajC tbody .ajv .gL .gI span');
+      const replyToEmail = replySpan ? replySpan.innerText : null;
+      console.log("replyto: ", replyToEmail);
+
+
 
 
 
