@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Anti-Phishing AI Extension",
+  "version": "1.0",
+  "description": "An extension that detects potential phishing emails",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "webNavigation"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://mail.google.com/*",
+        "*://outlook.live.com/*",
+        "*://mail.yahoo.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  
+  "externally_connectable": {
+    "matches": [
+      "*://cdn.rawgit.com/*"
+    ]
+  }
+}
