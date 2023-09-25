@@ -8,7 +8,7 @@ function decoder(encodedEmailInfo) { // Changed the argument name to avoid confu
     return decoded;
 }
 
-var emailInfo = "pENIS";
+var emailInfo = "";
 
 var output1 = encoder(emailInfo);
 console.log(output1);
