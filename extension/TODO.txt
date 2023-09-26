@@ -1,2 +1,0 @@
-add listener for the server
-pull email sender and check with whitelist before pulling all info. also blacklist
